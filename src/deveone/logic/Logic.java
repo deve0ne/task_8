@@ -29,7 +29,7 @@ public class Logic {
      * @param from  Вершина, с которой начинается поиск
      * @return
      */
-    public static int findParallelConnection(Graph graph, int from) {
+    private static int findParallelConnection(Graph graph, int from) {
         boolean[] visited = new boolean[graph.vertexCount()];
         Queue<Integer> queue = new LinkedList<>();
         LinkedList<Integer> parallelList = new LinkedList<>();
@@ -50,7 +50,7 @@ public class Logic {
         return parallelList.isEmpty() ? -1 : parallelList.getLast();
     }
 
-    public static void getAllPaths(Graph graph, List<List<Integer>> result, List<Integer> path, int start, int finish, boolean[] visited) {
+    private static void getAllPaths(Graph graph, List<List<Integer>> result, List<Integer> path, int start, int finish, boolean[] visited) {
         visited[start] = true; //Отмечаем текущую вершину посещённой.
         path.add(start);
 
@@ -100,32 +100,36 @@ public class Logic {
      * @param resistors - сопротивления резисторов
      * @param curr      - текущая вершина, начало параллельного соединения
      */
-    public static void simplifyParallel(boolean[][] adjMatrix, double[][] resistors, int curr) {
-        double parallelResistance = 0;
-        double serialResistance = 0;
+    private static void simplifyParallel(boolean[][] adjMatrix, double[][] resistors, int curr) {
         int parralelEnd = curr;
 
-
-        for (int i = 0; i < adjMatrix[curr].length; i++) { //Ищем конец пар-го соединения
-            if (adjMatrix[curr][i]) {
-                parralelEnd = searchForEndOfSerial(adjMatrix, i);
-                break;
-            }
-        }
-
-        //Будем искать вершину, которая будет концом параллельного соединения,т.е. в которую будут сходиться прочие ребра параллельного соединения
+        //Будем искать вершину, которая будет концом параллельного соединения, т.е. в которую будут сходиться прочие ребра параллельного соединения
         for (int i = 0; i < adjMatrix[curr].length; i++) {
+
+            for (int j = 0; j < adjMatrix[curr].length; j++) { //Ищем конец пар-го соединения
+                if (adjMatrix[curr][j]) {
+                    parralelEnd = searchForEndOfSerial(adjMatrix, j);
+                    break;
+                }
+            }
+
             //Для каждой смежной вершины упрощаем цепочку последовательных соединений, начало коей лежит в i, в один резистор
             if (adjMatrix[curr][i]) {
+                double serialResistance = 0;
+                double parallelResistance;
                 if (i != parralelEnd)
                     serialResistance = simplifySerial(adjMatrix, resistors, i, parralelEnd);
 
-                parallelResistance += 1 / (resistors[curr][i] + serialResistance);
+                parallelResistance = 1 / (resistors[curr][i] + serialResistance);
                 adjMatrix[curr][i] = false;
+
+                if (adjMatrix[curr][parralelEnd])
+                    parallelResistance += 1 / resistors[curr][parralelEnd];
+
+                resistors[curr][parralelEnd] = 1 / parallelResistance;
+                adjMatrix[curr][parralelEnd] = true;
             }
         }
-        resistors[curr][parralelEnd] = 1 / parallelResistance;
-        adjMatrix[curr][parralelEnd] = true;
     }
 
     /**
@@ -136,7 +140,7 @@ public class Logic {
      * @param curr      - текущая вершина
      * @return Проблемный метод, хотя по логике не сложный
      */
-    public static double simplifySerial(boolean[][] adjMatrix, double[][] resistors, int curr, int endOfSerial) {
+    private static double simplifySerial(boolean[][] adjMatrix, double[][] resistors, int curr, int endOfSerial) {
         //Начало, откуда будем двигаться дальше, это же номер вершины-начала нового резистора, который будет суммой всех последующих
 
         //Конечный индекс, который будем соединять с начальным, образуя тем самым новый резистор
@@ -170,7 +174,7 @@ public class Logic {
      * @param curr      - текущий индекс
      * @return возвращает конец последовательного соединения
      */
-    public static int searchForEndOfSerial(boolean[][] adjMatrix, int curr) {
+    private static int searchForEndOfSerial(boolean[][] adjMatrix, int curr) {
         //Индекс следующей вершины, куда стремимся
         int next = curr;
         //Счетчики входящих и выходящих в/из верш. next
@@ -207,24 +211,27 @@ public class Logic {
             return curr;
     }
 
-    private static boolean havePath(WeightedGraph inputGraph, int startNode, int endNode, boolean[] visited) {
-        if (inputGraph.vertexCount() < startNode || inputGraph.vertexCount() < endNode)
+    private static boolean checkHavePath(WeightedGraph inputGraph, int startNode, int endNode, boolean[] visited) {
+        if (inputGraph.vertexCount() < startNode || inputGraph.vertexCount() < endNode || startNode == endNode)
             return false;
 
+        boolean havePath = false;
         visited[startNode] = true;
 
         for (Integer v : inputGraph.adjacency(startNode)) {
             if (v == endNode)
-                return true;
+                havePath = true;
             else if (!visited[v])
-                return havePath(inputGraph, v, endNode, visited);
+                if (checkHavePath(inputGraph, v, endNode, visited))
+                    havePath = true;
         }
-        return false;
+
+        return havePath;
     }
 
 
     public static double calcCircuitResistance(WeightedGraph inputGraph, int startNode, int endNode) {
-        if (!havePath(inputGraph, startNode, endNode, new boolean[inputGraph.vertexCount()]))
+        if (!checkHavePath(inputGraph, startNode, endNode, new boolean[inputGraph.vertexCount()]))
             return -1;
 
         AdjMatrixWeightedDigraph digraph = stripCircuit(inputGraph, startNode, endNode);

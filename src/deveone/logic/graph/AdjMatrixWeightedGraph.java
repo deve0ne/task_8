@@ -62,15 +62,6 @@ public class AdjMatrixWeightedGraph implements WeightedGraph {
             this.weightEdge = weightEdge;
         }
 
-        public WeightedEdge(int indexOfVertex) {
-            this.indexOfVertex = indexOfVertex;
-            weightEdge = Double.MAX_VALUE;
-        }
-
-        public void setWeightEdge(double weightEdge) {
-            this.weightEdge = weightEdge;
-        }
-
         @Override
         public int to() {
             return indexOfVertex;
@@ -167,7 +158,7 @@ public class AdjMatrixWeightedGraph implements WeightedGraph {
 
     @Override
     public Iterable<Integer> adjacency(int v) {
-        return new Iterable<Integer>() {
+        return new Iterable<>() {
             Integer nextAdj = null;
 
             @Override
@@ -179,7 +170,7 @@ public class AdjMatrixWeightedGraph implements WeightedGraph {
                     }
                 }
 
-                return new Iterator<Integer>() {
+                return new Iterator<>() {
                     @Override
                     public boolean hasNext() {
                         return nextAdj != null;

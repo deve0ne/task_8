@@ -3,8 +3,8 @@ package deveone.graphics.additional;
 import java.awt.*;
 
 public class Vertex {
-    private Point pos;
-    private int id;
+    private final Point pos;
+    private final int id;
     private Color color;
 
     public Vertex(Point pos, int id) {

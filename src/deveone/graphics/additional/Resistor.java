@@ -3,9 +3,9 @@ package deveone.graphics.additional;
 import java.awt.*;
 
 public class Resistor {
-        private Vertex start;
-        private Vertex end;
-        private int weight;
+        private final Vertex start;
+        private final Vertex end;
+        private final int weight;
         private Color color;
 
     public Resistor(Vertex start, Vertex end, int weight) {

@@ -10,23 +10,27 @@ import java.awt.*;
 
 public class MainFrame extends JFrame {
     private JPanel mainPanel;
+    private JPanel graphPanel;
+
     private JCheckBox vertexModeCheckBox;
     private JCheckBox edgeModeCheckBox;
     private JCheckBox addModeCheckBox;
-    private JTextField weightField;
-    private JButton getAnswerButton;
     private JCheckBox delModeCheckBox;
-    private JLabel weightLabel;
-    private JPanel graphPanel;
-    private JLabel answerLabel;
+
+    private JTextField weightField;
     private JTextField answerField;
     private JTextField circuitStartField;
     private JTextField circuitEndField;
-    private JLabel circuitStartLabel;
-    private JLabel circuitEndLabel;
+
+    private JButton getAnswerButton;
     private JButton clearButton;
 
-    private Canvas canvas = new Canvas();
+    private JLabel weightLabel;
+    private JLabel answerLabel;
+    private JLabel circuitStartLabel;
+    private JLabel circuitEndLabel;
+
+    private final Canvas canvas = new Canvas();
 
 
     public MainFrame() {
