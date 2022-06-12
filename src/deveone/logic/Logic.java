@@ -120,7 +120,9 @@ public class Logic {
                 if (i != parralelEnd)
                     serialResistance = simplifySerial(adjMatrix, resistors, i, parralelEnd);
 
-                parallelResistance = 1 / (resistors[curr][i] + serialResistance);
+                double serialSum = resistors[curr][i] + serialResistance;
+//                parallelResistance = serialSum != 0 ? 1 / (serialSum) : 0;
+                parallelResistance =  1 / serialSum;
                 adjMatrix[curr][i] = false;
 
                 if (adjMatrix[curr][parralelEnd])

@@ -153,7 +153,6 @@ public class Canvas extends JComponent {
         for (Integer vertex : adj) {
             graph.removeEdge(vertex, vertexToRemove.getId());
         }
-//        graph.removeEdge(vertexToRemove);
 
         graphicalVertices.remove(vertexToRemove);
 
